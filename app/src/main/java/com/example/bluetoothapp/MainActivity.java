@@ -2,6 +2,7 @@ package com.example.bluetoothapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -18,11 +19,17 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     Button searchButton;
     TextView loadingText;
     RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     BluetoothAdapter bluetoothAdapter;
+    private ArrayList<BluetoothDataInstance> bluetoothData = new ArrayList<>();
+
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -32,12 +39,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Action","Finished");
                 searchButton.setEnabled(true);
                 loadingText.setText("");
+                layoutManager = new LinearLayoutManager(getApplicationContext());
+                adapter = new BluetoothDataAdpater(bluetoothData);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(layoutManager);
             }
             else if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 String deviceAddress = device.getAddress();
                 Log.d("Action", "Name : " + deviceName + " Address : "+ deviceAddress);
+                bluetoothData.add(new BluetoothDataInstance(
+                        deviceName == null ? "Unnamed": deviceName)
+                );
             }
         }
     };
