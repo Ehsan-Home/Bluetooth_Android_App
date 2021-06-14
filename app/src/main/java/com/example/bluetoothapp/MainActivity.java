@@ -27,12 +27,17 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("Action","in Receive");
             String action = intent.getAction();
-            Log.d("Action",action);
             if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 Log.d("Action","Finished");
                 searchButton.setEnabled(true);
+                loadingText.setText("");
+            }
+            else if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String deviceName = device.getName();
+                String deviceAddress = device.getAddress();
+                Log.d("Action", "Name : " + deviceName + " Address : "+ deviceAddress);
             }
         }
     };
